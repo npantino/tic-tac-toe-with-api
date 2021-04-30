@@ -35,18 +35,10 @@ public class ApiController {
 */
 
 class Move {
-    public String moveString = "";
+    public String moveString;
     public int xCoordinate = 0;
     public int yCoordinate = 0;
-    public int gameCount = 0;
-
-    public String getMoveString() {
-        return moveString;
-    }
-
-    public void setMoveString(String moveString) {
-        this.moveString = moveString;
-    }
+    public int gameId = 0;
 
     public int getxCoordinate() {
         return xCoordinate;
@@ -64,12 +56,12 @@ class Move {
         this.yCoordinate = yCoordinate;
     }
 
-    public int getGameCount() {
-        return gameCount;
+    public int getGameId() {
+        return gameId;
     }
 
-    public void setGameCount(int gameCount) {
-        this.gameCount = gameCount;
+    public void setGameId(int gameId) {
+        this.gameId = gameId;
     }
 }
 
@@ -77,40 +69,35 @@ class Move {
 public class TicTacToe {
 
     private HashMap<Integer, String[][]> games = new HashMap<>();
+    int gameCount = 0;
 
     private String[][] board = {{"", "", ""},
                               {"", "", ""},
                               {"", "", ""}};
 
-    @Get
-    public String[][] getBoard() {
-        return board;
-    }
-
     @Post
-    public int createGame(@Body Move move) {
-        move.gameCount++;
+    public int createGame() {
+        gameCount++;
         String gameBoard[][] = board;
-        games.put(move.gameCount, gameBoard);
-        return move.gameCount;
+        games.put(gameCount, gameBoard);
+        return gameCount;
     }
 
     @Get
-    public String[][] boardState(int gameId) {
-        return games.get(gameId);
+    public String[][] boardState(@Body Move move) {
+        return games.get(move.gameId);
     }
 
 
 
-    @Post
-    public String[][] updateBoard(@Body Move move, int gameId) {
-        if (!games.get(gameId)[move.xCoordinate][move.yCoordinate].isEmpty()) {
+    @Post("/game")
+    public String[][] updateBoard(@Body Move move) {
+        if (!games.get(move.gameId)[move.xCoordinate][move.yCoordinate].isEmpty()) {
             throw new RuntimeException("Move not valid");
         }
 
-        games.get(gameId)[move.xCoordinate][move.yCoordinate] = move.moveString;
-        return games.get(gameId);
+        games.get(move.gameId)[move.xCoordinate][move.yCoordinate] = move.moveString;
+        return games.get(move.gameId);
     }
-
 
 }
